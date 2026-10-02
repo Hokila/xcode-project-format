@@ -1,10 +1,12 @@
 //===----------------------------------------------------------------------===//
 // Copyright © 2026 Apple Inc. and the xcode-project-format project authors
 //
-// Licensed under Apache License v2.0
-// SPDX-License-Identifier: Apache-2.0
+// Licensed under Apache License v2.0 with Runtime Library Exception
+// SPDX-License-Identifier: Apache-2.0 WITH Swift-exception
 //
 //===----------------------------------------------------------------------===//
+
+#if os(macOS) || os(Linux) || os(Windows)
 
 import Foundation
 import Testing
@@ -159,7 +161,7 @@ private func formatterURL(sourceFilePath: String) throws -> URL {
         includingPropertiesForKeys: [.isRegularFileKey, .isExecutableKey],
         options: [],
     )?.compactMap { $0 as? URL } ?? []).filter { url in
-        url.lastPathComponent == "xcprojformatter"
+        (url.lastPathComponent == "xcprojformatter" || url.lastPathComponent == "xcprojformatter.exe")
             && url.pathComponents.contains(buildConfiguration)
             && fileManager.isExecutableFile(atPath: url.path)
     }
@@ -216,3 +218,5 @@ private func withTemporaryDirectory<Result>(body: (URL) throws -> Result) throws
     defer { try? FileManager.default.removeItem(at: directory) }
     return try body(directory)
 }
+
+#endif
